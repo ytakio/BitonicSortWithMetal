@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		606241DE25A293EE00E0B7C7 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606241DD25A293EE00E0B7C7 /* main.swift */; };
+		606241E725A2947100E0B7C7 /* BitonicSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A17B5225A22B21005EB670 /* BitonicSort.swift */; };
+		606241E825A2947100E0B7C7 /* Kernels.metal in Sources */ = {isa = PBXBuildFile; fileRef = 60A17B5325A22B21005EB670 /* Kernels.metal */; };
+		606241EC25A294E500E0B7C7 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606241EB25A294E500E0B7C7 /* Utils.swift */; };
+		606241ED25A294E500E0B7C7 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606241EB25A294E500E0B7C7 /* Utils.swift */; };
 		60A17B3E25A22AF8005EB670 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A17B3D25A22AF8005EB670 /* AppDelegate.swift */; };
 		60A17B4025A22AF8005EB670 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A17B3F25A22AF8005EB670 /* SceneDelegate.swift */; };
 		60A17B4225A22AF8005EB670 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A17B4125A22AF8005EB670 /* ViewController.swift */; };
@@ -17,7 +22,22 @@
 		60A17B5525A22B21005EB670 /* Kernels.metal in Sources */ = {isa = PBXBuildFile; fileRef = 60A17B5325A22B21005EB670 /* Kernels.metal */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		606241D925A293EE00E0B7C7 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		606241DB25A293EE00E0B7C7 /* BitonicSortWithMetalOnMac */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BitonicSortWithMetalOnMac; sourceTree = BUILT_PRODUCTS_DIR; };
+		606241DD25A293EE00E0B7C7 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		606241EB25A294E500E0B7C7 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		60A17B3A25A22AF8005EB670 /* BitonicSortWithMetal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BitonicSortWithMetal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		60A17B3D25A22AF8005EB670 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		60A17B3F25A22AF8005EB670 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -31,6 +51,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		606241D825A293EE00E0B7C7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		60A17B3725A22AF8005EB670 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -41,10 +68,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		606241DC25A293EE00E0B7C7 /* BitonicSortWithMetalOnMac */ = {
+			isa = PBXGroup;
+			children = (
+				606241DD25A293EE00E0B7C7 /* main.swift */,
+			);
+			path = BitonicSortWithMetalOnMac;
+			sourceTree = "<group>";
+		};
+		606241E425A2941000E0B7C7 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				60A17B5225A22B21005EB670 /* BitonicSort.swift */,
+				60A17B5325A22B21005EB670 /* Kernels.metal */,
+				606241EB25A294E500E0B7C7 /* Utils.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
 		60A17B3125A22AF8005EB670 = {
 			isa = PBXGroup;
 			children = (
+				606241E425A2941000E0B7C7 /* Sources */,
 				60A17B3C25A22AF8005EB670 /* BitonicSortWithMetal */,
+				606241DC25A293EE00E0B7C7 /* BitonicSortWithMetalOnMac */,
 				60A17B3B25A22AF8005EB670 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -53,6 +100,7 @@
 			isa = PBXGroup;
 			children = (
 				60A17B3A25A22AF8005EB670 /* BitonicSortWithMetal.app */,
+				606241DB25A293EE00E0B7C7 /* BitonicSortWithMetalOnMac */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -60,8 +108,6 @@
 		60A17B3C25A22AF8005EB670 /* BitonicSortWithMetal */ = {
 			isa = PBXGroup;
 			children = (
-				60A17B5225A22B21005EB670 /* BitonicSort.swift */,
-				60A17B5325A22B21005EB670 /* Kernels.metal */,
 				60A17B3D25A22AF8005EB670 /* AppDelegate.swift */,
 				60A17B3F25A22AF8005EB670 /* SceneDelegate.swift */,
 				60A17B4125A22AF8005EB670 /* ViewController.swift */,
@@ -76,6 +122,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		606241DA25A293EE00E0B7C7 /* BitonicSortWithMetalOnMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 606241E125A293EE00E0B7C7 /* Build configuration list for PBXNativeTarget "BitonicSortWithMetalOnMac" */;
+			buildPhases = (
+				606241D725A293EE00E0B7C7 /* Sources */,
+				606241D825A293EE00E0B7C7 /* Frameworks */,
+				606241D925A293EE00E0B7C7 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BitonicSortWithMetalOnMac;
+			productName = BitonicSortWithMetalOnMac;
+			productReference = 606241DB25A293EE00E0B7C7 /* BitonicSortWithMetalOnMac */;
+			productType = "com.apple.product-type.tool";
+		};
 		60A17B3925A22AF8005EB670 /* BitonicSortWithMetal */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 60A17B4E25A22AF9005EB670 /* Build configuration list for PBXNativeTarget "BitonicSortWithMetal" */;
@@ -102,6 +165,9 @@
 				LastSwiftUpdateCheck = 1230;
 				LastUpgradeCheck = 1230;
 				TargetAttributes = {
+					606241DA25A293EE00E0B7C7 = {
+						CreatedOnToolsVersion = 12.3;
+					};
 					60A17B3925A22AF8005EB670 = {
 						CreatedOnToolsVersion = 12.3;
 					};
@@ -121,6 +187,7 @@
 			projectRoot = "";
 			targets = (
 				60A17B3925A22AF8005EB670 /* BitonicSortWithMetal */,
+				606241DA25A293EE00E0B7C7 /* BitonicSortWithMetalOnMac */,
 			);
 		};
 /* End PBXProject section */
@@ -139,6 +206,17 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		606241D725A293EE00E0B7C7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				606241E725A2947100E0B7C7 /* BitonicSort.swift in Sources */,
+				606241E825A2947100E0B7C7 /* Kernels.metal in Sources */,
+				606241DE25A293EE00E0B7C7 /* main.swift in Sources */,
+				606241ED25A294E500E0B7C7 /* Utils.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		60A17B3625A22AF8005EB670 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -148,6 +226,7 @@
 				60A17B3E25A22AF8005EB670 /* AppDelegate.swift in Sources */,
 				60A17B5525A22B21005EB670 /* Kernels.metal in Sources */,
 				60A17B4025A22AF8005EB670 /* SceneDelegate.swift in Sources */,
+				606241EC25A294E500E0B7C7 /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +252,32 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		606241DF25A293EE00E0B7C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = W7QXB9ZV96;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		606241E025A293EE00E0B7C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = W7QXB9ZV96;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		60A17B4C25A22AF9005EB670 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -330,6 +435,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		606241E125A293EE00E0B7C7 /* Build configuration list for PBXNativeTarget "BitonicSortWithMetalOnMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				606241DF25A293EE00E0B7C7 /* Debug */,
+				606241E025A293EE00E0B7C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		60A17B3525A22AF8005EB670 /* Build configuration list for PBXProject "BitonicSortWithMetal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
