@@ -7,4 +7,16 @@
 
 import Foundation
 
-print(testSort())
+var log = String()
+guard let bitonic = BitonicSort() else {
+    log += "instantiation failed!!\n"
+    print(log)
+    exit(-1)
+}
+log += "======= without threadgroup_barrier =======\n"
+bitonic.use_threadgroup = false
+log += testSort(bitonic)
+log += "======= start using threadgroup_barrier =======\n"
+bitonic.use_threadgroup = true
+log += testSort(bitonic)
+print(log)

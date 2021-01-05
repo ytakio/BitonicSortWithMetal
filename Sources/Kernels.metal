@@ -16,30 +16,84 @@ using namespace metal;
 
 #define SET_ALL(x) (~(!!(x))+1)
 
+inline static int genLeftIndex(const uint tid, const uint32_t block_size)
+{
+    const uint32_t block_mask = block_size - 1;
+    const auto no = tid & block_mask;   // comparator No. in block
+    return ((tid & ~block_mask) << 1) | no;
+}
+
 kernel void bitonicsortKernel(constant simd_uint2 &params [[buffer(0)]],
                               device uint32_t *data [[buffer(1)]],
                               const uint tid [[thread_position_in_grid]])
 {
-    const auto unit_size = params.x;   // size of bitonic
+    const bool f_reverse = (tid & (params.x>>1)) != 0;    // to toggle direction
     const uint32_t block_size = params.y;  // size of comparison sets
-    const uint32_t block_mask = block_size - 1;
-    const auto no = tid & block_mask;   // comparator No. in block
-    const auto index = ((tid & ~block_mask) << 1) | no;
-    const auto l = data[index];
-    const auto r = data[index | block_size];
-#if 0
+    const auto left = genLeftIndex(tid, block_size);
+    const auto l = data[left];
+    const auto r = data[left | block_size];
     const bool lt = l < r;
-    const bool reverse = (index & unit_size) != 0;    // to toggle direction
-    const simd_bool2 dir = simd_bool2(lt, !lt) ^ reverse;    // (lt, gte) or (gte, lt)
+#if 1
+    const simd_bool2 dir = simd_bool2(lt, !lt) ^ f_reverse;    // (lt, gte) or (gte, lt)
     const simd_uint2 v = select(simd_uint2(r), simd_uint2(l), dir);
-    data[index] = v.x;
-    data[index | block_size] = v.y;
+    data[left] = v.x;
+    data[left | block_size] = v.y;
 #else
-    const auto lt = l < r;
-    const auto reverse = index & unit_size;
     if ( (!reverse && !lt) || (reverse && lt) ) {
-        data[index] = r;
-        data[index | block_size] = l;
+        data[left] = r;
+        data[left | block_size] = l;
     }
 #endif
+}
+
+inline static void loadShared(const uint tgsize,
+                              const uint sid,
+                              const uint tid,
+                              device uint32_t *data,
+                              threadgroup uint32_t *shared)
+{
+    const auto index = genLeftIndex(tid, tgsize);
+    shared[sid] = data[index];
+    shared[sid | tgsize] = data[index | tgsize];
+    threadgroup_barrier(mem_flags::mem_threadgroup);
+}
+
+inline static void storeShared(const uint tgsize,
+                               const uint sid,
+                               const uint tid,
+                               device uint32_t *data,
+                               threadgroup uint32_t *shared)
+{
+    const auto index = genLeftIndex(tid, tgsize);
+    data[index] = shared[sid];
+    data[index | tgsize] = shared[sid | tgsize];
+}
+
+kernel void bitonicsortInThreadGroupKernel(constant simd_uint2 &params [[buffer(0)]],
+                                               device uint32_t *data [[buffer(1)]],
+                                               threadgroup uint32_t *shared [[threadgroup(0)]], // element num must be 2x (threads per threadgroup)
+                                               const uint tgsize [[threads_per_threadgroup]],
+                                               const uint sid [[thread_index_in_threadgroup]],
+                                               const uint tid [[thread_position_in_grid]])
+{
+    loadShared(tgsize, sid, tid, data, shared);
+    auto unit_size = params.x;
+    auto block_size = params.y;
+    do {
+        const bool f_reverse = (tid & (unit_size>>1)) != 0;    // to toggle direction
+        for (uint32_t blocks = block_size; 0 < blocks; blocks >>= 1) {
+            const auto left = genLeftIndex(sid, blocks);
+            const auto l = shared[left];
+            const auto r = shared[left | blocks];
+            const bool lt = l < r;
+            const simd_bool2 dir = simd_bool2(lt, !lt) ^ f_reverse;    // (lt, gte) or (gte, lt)
+            const simd_uint2 v = select(simd_uint2(r), simd_uint2(l), dir);
+            shared[left] = v.x;
+            shared[left | blocks] = v.y;
+            threadgroup_barrier(mem_flags::mem_threadgroup);
+        }
+        block_size = unit_size;
+        unit_size <<= 1;
+    } while(block_size < tgsize);
+    storeShared(tgsize, sid, tid, data, shared);
 }

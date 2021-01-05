@@ -17,7 +17,19 @@ class ViewController: UIViewController, UITextViewDelegate {
             exit(-1)
         }
         // test
-        tv.text = testSort()
+        var log = String()
+        guard let bitonic = BitonicSort() else {
+            log += "instantiation failed!!\n"
+            tv.text = log
+            return
+        }
+        log += "======= without threadgroup_barrier =======\n"
+        bitonic.use_threadgroup = false
+        log += testSort(bitonic)
+        log += "======= start using threadgroup_barrier =======\n"
+        bitonic.use_threadgroup = true
+        log += testSort(bitonic)
+        tv.text = log
     }
 
 }
