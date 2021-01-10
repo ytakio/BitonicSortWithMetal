@@ -30,6 +30,7 @@ class ViewController: UIViewController, UITextViewDelegate {
         bitonic.use_threadgroup = true
         log += testSort(bitonic)
         tv.text = log
+        print(log)
     }
 
 }

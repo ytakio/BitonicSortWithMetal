@@ -13,10 +13,11 @@ guard let bitonic = BitonicSort() else {
     print(log)
     exit(-1)
 }
-log += "======= without threadgroup_barrier =======\n"
+log = "======= without threadgroup_barrier =======\n"
 bitonic.use_threadgroup = false
 log += testSort(bitonic)
-log += "======= start using threadgroup_barrier =======\n"
+print(log)
+log = "======= start using threadgroup_barrier =======\n"
 bitonic.use_threadgroup = true
 log += testSort(bitonic)
 print(log)

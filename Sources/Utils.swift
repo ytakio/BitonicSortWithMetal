@@ -43,11 +43,11 @@ func testSort(_ algorithm: BitonicSort) -> String {
     let cpu_start = Date()
     data.sort()
     let cpu_end = Date()
-    guard let (mtl, _) = algorithm.getPointer() else {
+    guard let (mtl, count) = algorithm.getPointer() else {
         log += "can't get device memory pointer!!\n"
         return log
     }
-    if checkData(d1: data, d2: mtl, count: data.count) {
+    if checkData(d1: data, d2: mtl, count: count) {
         log += "sorting \(data.count) elements passed.\n"
         log += "metal time: " + String(metal_start.distance(to: metal_end)) + "\n"
         log += "cpu time: " + String(cpu_start.distance(to: cpu_end)) + "\n"

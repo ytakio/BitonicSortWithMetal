@@ -19,8 +19,9 @@ class BitonicSort {
     private var cmdEncoder: MTLComputeCommandEncoder?
     
     private var mtlBuffer: MTLBuffer?
+    private var count: Int?
     private var length: Int?
-    
+
     var use_threadgroup = true
 
     init?(device: MTLDevice, library: MTLLibrary) {
@@ -61,8 +62,9 @@ class BitonicSort {
             let left = raw.advanced(by: MemoryLayout<UInt32>.stride * array.count)
             left.initializeMemory(as: UInt32.self, repeating: UInt32.max, count: length - array.count)
         }
-        self.mtlBuffer = buffer
+        self.count = array.count
         self.length = length
+        self.mtlBuffer = buffer
     }
     
     func getPointer() -> (UnsafePointer<UInt32>, Int)? {
@@ -70,7 +72,7 @@ class BitonicSort {
             return nil
         }
         let p = UnsafePointer(raw.assumingMemoryBound(to: UInt32.self))
-        return (p, length!)
+        return (p, count!)
     }
     
     func prepare() {
@@ -98,8 +100,8 @@ class BitonicSort {
         let unit_size = min(grid_size.width, bitonicsortState.maxTotalThreadsPerThreadgroup)
         var params = simd_uint2(repeating: 1)
         while params.x < length! {
+            params.y = params.x
             params.x <<= 1
-            params.y = params.x >> 1
             repeat {
                 if !use_threadgroup || unit_size < params.y {
                     enc.setComputePipelineState(bitonicsortState)
@@ -116,7 +118,7 @@ class BitonicSort {
                     enc.setThreadgroupMemoryLength(unit_size << 3, index: 0)
                     enc.dispatchThreads(grid_size,
                                         threadsPerThreadgroup: MTLSizeMake(unit_size, 1, 1))
-                    params.x = max(UInt32(unit_size), params.x)
+                    params.x = max(UInt32(unit_size << 1), params.x)
                     params.y = 0
                 }
             } while 0 < params.y
