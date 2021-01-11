@@ -13,11 +13,13 @@ class BitonicSort {
     private let device: MTLDevice
     private let cmdQueue: MTLCommandQueue
     private let bitonicsortState: MTLComputePipelineState
+    private let bitonicsortFirstRunState: MTLComputePipelineState
     private let bitonicsortInThreadGroupState: MTLComputePipelineState
 
     private var cmdBuffer: MTLCommandBuffer?
     private var cmdEncoder: MTLComputeCommandEncoder?
     
+    private var mtlParameter: MTLBuffer
     private var mtlBuffer: MTLBuffer?
     private var count: Int?
     private var length: Int?
@@ -26,9 +28,11 @@ class BitonicSort {
 
     init?(device: MTLDevice, library: MTLLibrary) {
         guard let f1 = library.makeFunction(name: "bitonicsortKernel"),
-              let f2 = library.makeFunction(name: "bitonicsortInThreadGroupKernel"),
+              let f2 = library.makeFunction(name: "bitonicsortFirstRunKernel"),
+              let f3 = library.makeFunction(name: "bitonicsortInThreadGroupKernel"),
               let k1 = try? device.makeComputePipelineState(function: f1),
               let k2 = try? device.makeComputePipelineState(function: f2),
+              let k3 = try? device.makeComputePipelineState(function: f3),
               let q = device.makeCommandQueue()
         else {
             return nil
@@ -36,7 +40,29 @@ class BitonicSort {
         self.device = device
         self.cmdQueue = q
         self.bitonicsortState = k1
-        self.bitonicsortInThreadGroupState = k2
+        self.bitonicsortFirstRunState = k2
+        self.bitonicsortInThreadGroupState = k3
+        // make parameter table for first run
+        let target = self.bitonicsortFirstRunState.maxTotalThreadsPerThreadgroup
+        var v = simd_uint2(repeating: 1)
+        var params: [simd_uint2] = []
+        while v.x <= target {
+            v.y = v.x
+            v.x <<= 1
+            while 0 < v.y {
+                params.append(v)
+                v.y >>= 1
+            }
+        }
+        guard let buffer = device.makeBuffer(
+                length: MemoryLayout<simd_uint2>.stride * params.count,
+                options: [.storageModeShared])
+        else {
+            return nil
+        }
+        let raw = buffer.contents()
+        raw.initializeMemory(as: simd_uint2.self, from: &params, count: params.count)
+        self.mtlParameter = buffer
     }
     
     convenience init?() {
@@ -98,7 +124,17 @@ class BitonicSort {
         }
         let grid_size = MTLSizeMake(length! >> 1, 1, 1)
         let unit_size = min(grid_size.width, bitonicsortState.maxTotalThreadsPerThreadgroup)
+        let group_size = MTLSizeMake(unit_size, 1, 1)
         var params = simd_uint2(repeating: 1)
+        // first run
+        if use_threadgroup {
+            params.x = UInt32(unit_size << 1)
+            enc.setComputePipelineState(bitonicsortFirstRunState)
+            enc.setBuffer(mtlParameter, offset: 0, index: 0)
+            enc.setBuffer(buf, offset: 0, index: 1)
+            enc.setThreadgroupMemoryLength((MemoryLayout<UInt32>.stride * unit_size) << 1, index: 0)
+            enc.dispatchThreads(grid_size, threadsPerThreadgroup: group_size)
+        }
         while params.x < length! {
             params.y = params.x
             params.x <<= 1
@@ -107,20 +143,17 @@ class BitonicSort {
                     enc.setComputePipelineState(bitonicsortState)
                     enc.setBytes(&params, length: MemoryLayout<simd_uint2>.stride, index: 0)
                     enc.setBuffer(buf, offset: 0, index: 1)
-                    enc.dispatchThreads(grid_size,
-                                        threadsPerThreadgroup: MTLSizeMake(unit_size, 1, 1))
                     params.y >>= 1
                 }
                 else {
                     enc.setComputePipelineState(bitonicsortInThreadGroupState)
                     enc.setBytes(&params, length: MemoryLayout<simd_uint2>.stride, index: 0)
                     enc.setBuffer(buf, offset: 0, index: 1)
-                    enc.setThreadgroupMemoryLength(unit_size << 3, index: 0)
-                    enc.dispatchThreads(grid_size,
-                                        threadsPerThreadgroup: MTLSizeMake(unit_size, 1, 1))
-                    params.x = max(UInt32(unit_size << 1), params.x)
+                    enc.setThreadgroupMemoryLength((MemoryLayout<UInt32>.stride * unit_size) << 1, index: 0)
+//                    params.x = max(UInt32(unit_size << 1), params.x)
                     params.y = 0
                 }
+                enc.dispatchThreads(grid_size, threadsPerThreadgroup: group_size)
             } while 0 < params.y
         }
     }
